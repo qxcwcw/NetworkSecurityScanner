@@ -1,0 +1,67 @@
+﻿@model NmapScanner.Core.ScanResult
+@{
+    ViewData["Title"] = "Сканер мережі";
+}
+
+<div class="text-center mb-4 mt-5">
+    <h1 class="display-4 fw-bold">Network Security Scanner</h1>
+    <p class="text-muted">Введіть IP-адресу для перевірки відкритих портів та вразливих сервісів.</p>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <form method="post" class="d-flex gap-2 mb-4">
+            <input type="text" name="targetIp" class="form-control form-control-lg" placeholder="Наприклад, 192.168.1.1" required />
+            <button type="submit" class="btn btn-dark btn-lg px-4">Сканувати</button>
+        </form>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger shadow-sm">
+                <strong>Увага!</strong> @ViewBag.Error
+            </div>
+        }
+    </div>
+</div>
+
+@if (Model != null)
+{
+    <div class="card shadow border-0 mt-2">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Результати для: @Model.IpAddress</h5>
+            <span class="badge bg-secondary">Портів знайдено: @Model.Ports.Count</span>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Порт</th>
+                        <th>Стан</th>
+                        <th>Сервіс</th>
+                        <th>Версія</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var port in Model.Ports)
+                    {
+                        <tr>
+                            <td class="ps-4 fw-bold">@port.PortId</td>
+                            <td>
+                                @if (port.State.ToLower() == "open")
+                                {
+                                    <span class="badge bg-success">@port.State</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">@port.State</span>
+                                }
+                            </td>
+                            <td>@port.ServiceName</td>
+                            <td class="text-muted">@port.ServiceVersion</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
